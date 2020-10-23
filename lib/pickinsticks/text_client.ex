@@ -1,16 +1,16 @@
 defmodule Pickinsticks.TextClient do
 
-  alias Pickinsticks.{Game,State}
+  alias Pickinsticks.Game
 
   def run(), do: Game.new_game |> run
 
-  def run(%State{won: true} = state) do
+  def run(%Game{won: true} = state) do
     clear_screen()
     draw_grid(state)
     print_victory_and_exit(state.sticks_found)
   end
 
-  def run(%State{won: false} = state) do
+  def run(%Game{won: false} = state) do
     clear_screen()
     draw_grid(state)
     IO.gets("Where do you move [h,j,k,l] ? : ")

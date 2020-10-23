@@ -1,8 +1,16 @@
 defmodule Pickinsticks.Game do
 
-  alias Pickinsticks.State
+  alias Pickinsticks.Game
 
-  def new_game, do: %State{}
+  defstruct(
+    sticks:          [{2,2}, {3,0}, {5,7}, {8,2}],
+    player_position: {0, 0},
+    world_bounds:    {18, 9},
+    sticks_found:    0,
+    won:             false
+  )
+
+  def new_game, do: %Game{}
   def handle_input(input, state) do
     input
     |> make_move(state)
@@ -10,39 +18,28 @@ defmodule Pickinsticks.Game do
     |> check_win
   end
 
-  def make_move("k", %State{player_position: {_, y}} = state) do
-    cond do
-      y > 0 -> %State{state | player_position: move_up(state.player_position)}
-      true -> state
-    end
+  def make_move("k", %Game{player_position: {_, y}} = state) when y > 0 do
+    move_up(state)
   end
 
-  def make_move("j", %State{world_bounds: {_, h}, player_position: {_, y}} = state) do
-    cond do
-      y <= h -> %State{state | player_position: move_down(state.player_position)}
-      true -> state
-    end
+  def make_move("j", %Game{world_bounds: {_, h}, player_position: {_, y}} = state) when y < h do
+    move_down(state)
   end
 
-  def make_move("h", %State{player_position: {x, _}} = state) do
-    cond do
-      x > 0 -> %State{state | player_position: move_left(state.player_position)}
-      true -> state
-    end
+  def make_move("h", %Game{player_position: {x, _}} = state) when x > 0 do
+    move_left(state)
   end
 
-  def make_move("l", %State{world_bounds: {w, _}, player_position: {x, _}} = state) do
-    cond do
-      x <= w -> %State{state | player_position: move_right(state.player_position)}
-      true -> state
-    end
+  def make_move("l", %Game{world_bounds: {w, _}, player_position: {x, _}} = state) when x < w do
+    move_right(state)
   end
+
   def make_move(_, state), do: state
 
-  def move_up({x,y}),    do: {x, y - 1}
-  def move_down({x,y}),  do: {x, y + 1}
-  def move_left({x,y}),  do: {x - 1, y}
-  def move_right({x,y}), do: {x + 1, y}
+  def move_up(%Game{player_position: {x,y}} = state),    do: %Game{state | player_position: {x, y - 1}}
+  def move_down(%Game{player_position: {x,y}} = state),  do: %Game{state | player_position: {x, y + 1}}
+  def move_left(%Game{player_position: {x,y}} = state),  do: %Game{state | player_position: {x - 1, y}}
+  def move_right(%Game{player_position: {x,y}} = state), do: %Game{state | player_position: {x + 1, y}}
 
   def check_colisions(state) do
     cond do
@@ -51,15 +48,15 @@ defmodule Pickinsticks.Game do
     end
   end
 
-  def pick_stick(%State{player_position: ppos, sticks_found: count} = state) do
-    %State{
+  def pick_stick(%Game{player_position: ppos, sticks_found: count} = state) do
+    %Game{
       state |
       sticks: Enum.reject(state.sticks, fn x -> x == ppos end),
       sticks_found: count + 1
     }
   end
 
-  def check_win(%State{sticks: []} = state), do: %State{ state | won: true }
+  def check_win(%Game{sticks: []} = state), do: %Game{ state | won: true }
   def check_win(state), do: state
 
 end
