@@ -1,6 +1,5 @@
 defmodule Pickinsticks do
+  alias Pickinsticks.Game
 
-  alias Pickinsticks.TextClient
-
-  defdelegate new_game, to: TextClient, as: :run
+  defdelegate new_game, to: Game
 end
