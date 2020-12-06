@@ -1,14 +1,6 @@
 defmodule Pickinsticks.Game do
-  alias Pickinsticks.Game
+  alias Pickinsticks.State
   alias Pickinsticks.Position, as: Pos
-
-  defstruct(
-    sticks: [],
-    player_position: %Pos{},
-    world_bounds: %{width: 18, height: 9},
-    sticks_found: 0,
-    won: false
-  )
 
   def new_game, do: new_game(1)
 
@@ -21,10 +13,10 @@ defmodule Pickinsticks.Game do
     Pos.at(Enum.random(0..18), Enum.random(0..9))
   end
 
-  def build_game, do: %Game{}
+  def build_game, do: %State{}
 
   def build_game(sticks) do
-    %Game{sticks: sticks}
+    %State{sticks: sticks}
   end
 
   def make_move(state, direction) do
@@ -35,13 +27,16 @@ defmodule Pickinsticks.Game do
     |> check_win
   end
 
-  defp move(%Game{player_position: pp} = state, :up), do: move_player_at(state, pp.x, pp.y - 1)
-  defp move(%Game{player_position: pp} = state, :down), do: move_player_at(state, pp.x, pp.y + 1)
-  defp move(%Game{player_position: pp} = state, :left), do: move_player_at(state, pp.x - 1, pp.y)
-  defp move(%Game{player_position: pp} = state, :right), do: move_player_at(state, pp.x + 1, pp.y)
+  defp move(%State{player_position: pp} = state, :up), do: move_player_at(state, pp.x, pp.y - 1)
+  defp move(%State{player_position: pp} = state, :down), do: move_player_at(state, pp.x, pp.y + 1)
+  defp move(%State{player_position: pp} = state, :left), do: move_player_at(state, pp.x - 1, pp.y)
+
+  defp move(%State{player_position: pp} = state, :right),
+    do: move_player_at(state, pp.x + 1, pp.y)
+
   defp move(state, _), do: state
 
-  defp move_player_at(state, x, y), do: %Game{state | player_position: Pos.at(x, y)}
+  defp move_player_at(state, x, y), do: %State{state | player_position: Pos.at(x, y)}
 
   defp check_colisions(state) do
     cond do
@@ -73,14 +68,14 @@ defmodule Pickinsticks.Game do
   defp update_state({:out_of_bounds, _}, current_state), do: current_state
   defp update_state({:ok, state}, _), do: state
 
-  defp pick_stick(%Game{player_position: ppos, sticks_found: count} = state) do
-    %Game{
+  defp pick_stick(%State{player_position: ppos, sticks_found: count} = state) do
+    %State{
       state
       | sticks: Enum.reject(state.sticks, fn x -> x == ppos end),
         sticks_found: count + 1
     }
   end
 
-  defp check_win(%Game{sticks: []} = state), do: %Game{state | won: true}
+  defp check_win(%State{sticks: []} = state), do: %State{state | won: true}
   defp check_win(state), do: state
 end
