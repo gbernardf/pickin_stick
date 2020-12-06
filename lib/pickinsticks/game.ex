@@ -1,15 +1,16 @@
 defmodule Pickinsticks.Game do
   alias Pickinsticks.Game
+  alias Pickinsticks.Position, as: Pos
 
   defstruct(
-    sticks: [%{x: 2, y: 2}, %{x: 3, y: 0}, %{x: 5, y: 7}, %{x: 8, y: 2}],
-    player_position: %{x: 0, y: 0},
+    sticks: [],
+    player_position: %Pos{},
     world_bounds: %{width: 18, height: 9},
     sticks_found: 0,
     won: false
   )
 
-  def new_game, do: %Game{}
+  def new_game, do: new_game(1)
 
   def new_game(sticks_count) do
     Enum.map(1..sticks_count, &random_stick/1)
@@ -17,7 +18,7 @@ defmodule Pickinsticks.Game do
   end
 
   def random_stick(_) do
-    %{x: Enum.random(0..18), y: Enum.random(0..9)}
+    Pos.at(Enum.random(0..18), Enum.random(0..9))
   end
 
   def build_game, do: %Game{}
@@ -34,19 +35,13 @@ defmodule Pickinsticks.Game do
     |> check_win
   end
 
-  defp move(%Game{player_position: pp} = state, :up),
-    do: %Game{state | player_position: %{x: pp.x, y: pp.y - 1}}
-
-  defp move(%Game{player_position: pp} = state, :down),
-    do: %Game{state | player_position: %{x: pp.x, y: pp.y + 1}}
-
-  defp move(%Game{player_position: pp} = state, :left),
-    do: %Game{state | player_position: %{x: pp.x - 1, y: pp.y}}
-
-  defp move(%Game{player_position: pp} = state, :right),
-    do: %Game{state | player_position: %{x: pp.x + 1, y: pp.y}}
-
+  defp move(%Game{player_position: pp} = state, :up), do: move_player_at(state, pp.x, pp.y - 1)
+  defp move(%Game{player_position: pp} = state, :down), do: move_player_at(state, pp.x, pp.y + 1)
+  defp move(%Game{player_position: pp} = state, :left), do: move_player_at(state, pp.x - 1, pp.y)
+  defp move(%Game{player_position: pp} = state, :right), do: move_player_at(state, pp.x + 1, pp.y)
   defp move(state, _), do: state
+
+  defp move_player_at(state, x, y), do: %Game{state | player_position: Pos.at(x, y)}
 
   defp check_colisions(state) do
     cond do
@@ -58,7 +53,7 @@ defmodule Pickinsticks.Game do
   end
 
   defp player_on_stick?(state) do
-    Enum.any?(state.sticks, fn x -> x == state.player_position end)
+    Enum.any?(state.sticks, &Pos.same?(&1, state.player_position))
   end
 
   defp player_blocked?(_state), do: false
