@@ -1,5 +1,6 @@
 defmodule Pickinsticks.Colision do
   alias Pickinsticks.Position, as: Pos
+  alias Pickinsticks.State
 
   def check_colisions(state) do
     cond do
@@ -14,7 +15,9 @@ defmodule Pickinsticks.Colision do
     Enum.any?(state.sticks, &Pos.same?(&1, state.player_position))
   end
 
-  defp player_blocked?(_state), do: false
+  defp player_blocked?(%State{tiles: %{walls: walls}} = state) do
+    Enum.any?(walls, &Pos.same?(&1.position, state.player_position))
+  end
 
   defp player_out_of_bounds?(state) do
     cond do

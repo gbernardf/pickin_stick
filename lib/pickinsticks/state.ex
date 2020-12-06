@@ -1,12 +1,13 @@
 defmodule Pickinsticks.State do
-  alias Pickinsticks.State
+  alias Pickinsticks.{State, Map}
   alias Pickinsticks.Position, as: Pos
 
   defstruct(
     sticks: [],
-    player_position: %Pos{},
+    player_position: Pos.at(1, 1),
     world_bounds: %{width: 18, height: 9},
     sticks_found: 0,
+    tiles: Map.build_map(),
     won: false
   )
 
