@@ -1,8 +1,8 @@
-defmodule Pickinsticks.Colision do
+defmodule Pickinsticks.Collision do
   alias Pickinsticks.Position, as: Pos
   alias Pickinsticks.State
 
-  def check_colisions(state) do
+  def check_collisions(state) do
     cond do
       player_on_stick?(state) -> {:stick, state}
       player_blocked?(state) -> {:blocked, state}
