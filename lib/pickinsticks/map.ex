@@ -28,7 +28,10 @@ defmodule Pickinsticks.Map do
     rig_walls = 0..9 |> Enum.map(fn y -> Pos.at(18, y) end)
     bot_block = 9..10 |> Enum.flat_map(fn x -> Enum.map(7..8, fn y -> Pos.at(x, y) end) end)
 
-    %Pickinsticks.Map{map | walls: map.walls ++ top_walls ++ bot_walls ++ lef_walls ++ rig_walls ++ bot_block}
+    %Pickinsticks.Map{
+      map
+      | walls: map.walls ++ top_walls ++ bot_walls ++ lef_walls ++ rig_walls ++ bot_block
+    }
   end
 
   defp add_grass(%Pickinsticks.Map{} = map) do

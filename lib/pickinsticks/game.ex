@@ -1,8 +1,6 @@
 defmodule Pickinsticks.Game do
   alias Pickinsticks.{State, Collision, StickGenerator}
 
-  def new_game, do: new_game(1)
-
   def new_game(sticks_count) do
     %State{}
     |> add_sticks(sticks_count)
@@ -18,5 +16,10 @@ defmodule Pickinsticks.Game do
     |> Collision.check_collisions()
     |> State.update_state(state)
     |> State.check_win()
+    |> build_view()
+  end
+
+  defp build_view(state) do
+    {state, state}
   end
 end
