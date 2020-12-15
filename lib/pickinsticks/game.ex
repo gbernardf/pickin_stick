@@ -1,5 +1,6 @@
 defmodule Pickinsticks.Game do
-  alias Pickinsticks.{State, Collision, StickGenerator}
+  alias Pickinsticks.{State, Collision, StickGenerator, Window}
+  alias Pickinsticks.Map.Window
 
   def new_game(sticks_count) do
     %State{}
@@ -20,6 +21,6 @@ defmodule Pickinsticks.Game do
   end
 
   defp build_view(state) do
-    {state, state}
+    {Window.build(state), state}
   end
 end
