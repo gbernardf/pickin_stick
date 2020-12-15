@@ -22,10 +22,10 @@ defmodule Pickinsticks.Map.Window do
 
     with tiles <- filter_tiles(state.tiles, view),
          sticks <-
-           filter_sticks(state.sticks, view) do
+           filter_sticks(state.sticks, view) |> Enum.map(&position_to_tuple(&1)) do
       %Window{
         data: %{
-          player: state.player_position,
+          player: state.player_position |> position_to_tuple(),
           sticks_found: state.sticks_found,
           won: state.won,
           sticks: sticks,
@@ -39,11 +39,11 @@ defmodule Pickinsticks.Map.Window do
     Geometry.Rectangle.build(center.x, center.y, width, height)
   end
 
-  def filter_tiles(tiles, view) do
-    with walls <- keep_in_view(tiles.walls, view),
-         grass <- keep_in_view(tiles.ground.grass, view),
+  defp filter_tiles(tiles, view) do
+    with walls <- keep_in_view(tiles.walls, view) |> Enum.map(&position_to_tuple(&1)),
+         grass <- keep_in_view(tiles.ground.grass, view) |> Enum.map(&position_to_tuple(&1)),
          gravel <-
-           keep_in_view(tiles.ground.gravel, view) do
+           keep_in_view(tiles.ground.gravel, view) |> Enum.map(&position_to_tuple(&1)) do
       %{
         walls: walls,
         ground: %{
@@ -54,11 +54,13 @@ defmodule Pickinsticks.Map.Window do
     end
   end
 
-  def filter_sticks(sticks, view) do
+  defp filter_sticks(sticks, view) do
     keep_in_view(sticks, view)
   end
 
-  def keep_in_view(items, view) do
+  defp keep_in_view(items, view) do
     Enum.filter(items, &Geometry.in_rectangle(&1, view))
   end
+
+  defp position_to_tuple(%Pos{x: x, y: y}), do: {x, y}
 end
