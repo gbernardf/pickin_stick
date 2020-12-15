@@ -17,7 +17,6 @@ defmodule Pickinsticks.Game do
     |> Collision.check_collisions()
     |> State.update_state(state)
     |> State.check_win()
-    |> build_view()
   end
 
   def build_view(state) do

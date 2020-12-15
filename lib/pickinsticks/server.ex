@@ -12,14 +12,13 @@ defmodule Pickinsticks.Server do
   end
 
   def handle_call({:make_move, direction}, _form, state) do
-    {view, state} = Game.make_move(state, direction)
+    state = Game.make_move(state, direction)
+    view = Game.build_view(state)
 
     {:reply, view, state}
   end
 
   def handle_call({:state}, _form, state) do
-    {view, state} = Game.build_view(state)
-
-    {:reply, view, state}
+    {:reply, Game.build_view(state), state}
   end
 end

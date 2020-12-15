@@ -1,7 +1,7 @@
 defmodule Pickinsticks.Map do
-  alias Pickinsticks.Position, as: Pos
+  alias Pickinsticks.Map.Tile
 
-  defstruct ground: %{grass: [], gravel: []}, walls: []
+  defstruct colliders: [], ground: []
   #     0123456789012345678
   #    0###################
   #    1#,,,,,,,,,,,,,,,,,#
@@ -22,44 +22,43 @@ defmodule Pickinsticks.Map do
   end
 
   defp add_walls(%Pickinsticks.Map{} = map) do
-    top_walls = 0..18 |> Enum.map(fn x -> Pos.at(x, 0) end)
-    bot_walls = 0..18 |> Enum.map(fn x -> Pos.at(x, 9) end)
-    lef_walls = 0..9 |> Enum.map(fn y -> Pos.at(0, y) end)
-    rig_walls = 0..9 |> Enum.map(fn y -> Pos.at(18, y) end)
-    bot_block = 9..10 |> Enum.flat_map(fn x -> Enum.map(7..8, fn y -> Pos.at(x, y) end) end)
+    top_walls = 0..18 |> Enum.map(fn x -> Tile.wall_at(x, 0) end)
+    bot_walls = 0..18 |> Enum.map(fn x -> Tile.wall_at(x, 9) end)
+    lef_walls = 0..9 |> Enum.map(fn y -> Tile.wall_at(0, y) end)
+    rig_walls = 0..9 |> Enum.map(fn y -> Tile.wall_at(18, y) end)
+    bot_block = 9..10 |> Enum.flat_map(fn x -> Enum.map(7..8, fn y -> Tile.wall_at(x, y) end) end)
 
     %Pickinsticks.Map{
       map
-      | walls: map.walls ++ top_walls ++ bot_walls ++ lef_walls ++ rig_walls ++ bot_block
+      | colliders: map.colliders ++ top_walls ++ bot_walls ++ lef_walls ++ rig_walls ++ bot_block
     }
   end
 
   defp add_grass(%Pickinsticks.Map{} = map) do
-    top_grass = Enum.flat_map(1..17, fn x -> Enum.map(1..5, fn y -> Pos.at(x, y) end) end)
+    top_grass = Enum.flat_map(1..17, fn x -> Enum.map(1..5, fn y -> Tile.grass_at(x, y) end) end)
 
-    bot_lef_grass = Enum.flat_map(1..8, fn x -> Enum.map(6..8, fn y -> Pos.at(x, y) end) end)
+    bot_lef_grass =
+      Enum.flat_map(1..8, fn x -> Enum.map(6..8, fn y -> Tile.grass_at(x, y) end) end)
 
     other_grass =
-      Enum.map(9..13, fn x -> Pos.at(x, 6) end) ++
-        [Pos.at(16, 6)] ++ [Pos.at(17, 6)]
+      Enum.map(9..13, fn x -> Tile.grass_at(x, 6) end) ++
+        [Tile.grass_at(16, 6)] ++ [Tile.grass_at(17, 6)]
 
     %Pickinsticks.Map{
       map
-      | ground: %{
-          map.ground
-          | grass: map.ground.grass ++ top_grass ++ bot_lef_grass ++ other_grass
-        }
+      | ground: map.ground ++ top_grass ++ bot_lef_grass ++ other_grass
     }
   end
 
   def add_gravel(%Pickinsticks.Map{} = map) do
-    bot_gravel = Enum.flat_map(11..17, fn x -> Enum.map(7..8, fn y -> Pos.at(x, y) end) end)
+    bot_gravel =
+      Enum.flat_map(11..17, fn x -> Enum.map(7..8, fn y -> Tile.gravel_at(x, y) end) end)
 
-    last_gravel = Enum.map(13..15, fn x -> Pos.at(x, 6) end)
+    last_gravel = Enum.map(13..15, fn x -> Tile.gravel_at(x, 6) end)
 
     %Pickinsticks.Map{
       map
-      | ground: %{map.ground | gravel: map.ground.gravel ++ bot_gravel ++ last_gravel}
+      | ground: map.ground ++ bot_gravel ++ last_gravel
     }
   end
 end

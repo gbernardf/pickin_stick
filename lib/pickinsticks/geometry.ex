@@ -6,9 +6,9 @@ defmodule Pickinsticks.Geometry do
     min = %Pos{x: rect.x, y: rect.y}
     max = %Pos{x: rect.x + rect.w, y: rect.y + rect.h}
 
-    Pos.left_from?(pos, max) &&
-      Pos.right_from?(pos, min) &&
-      Pos.below?(pos, min) &&
-      Pos.above?(pos, max)
+    pos.x <= max.x &&
+      pos.x >= min.x &&
+      pos.y <= max.y &&
+      pos.y >= min.y
   end
 end

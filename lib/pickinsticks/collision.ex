@@ -15,8 +15,8 @@ defmodule Pickinsticks.Collision do
     Enum.any?(state.sticks, &Pos.same?(&1, state.player_position))
   end
 
-  defp player_blocked?(%State{tiles: %{walls: walls}} = state) do
-    Enum.any?(walls, &Pos.same?(&1, state.player_position))
+  defp player_blocked?(%State{tiles: %{colliders: colliders}} = state) do
+    Enum.any?(colliders, &Pos.same?(&1.position, state.player_position))
   end
 
   defp player_out_of_bounds?(state) do
