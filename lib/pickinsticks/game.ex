@@ -20,6 +20,6 @@ defmodule Pickinsticks.Game do
   end
 
   def build_view(state) do
-    {Window.build(state), state}
+    Window.build(state)
   end
 end
