@@ -1,5 +1,5 @@
 defmodule Pickinsticks do
-  alias Pickinsticks.{Game, Server}
+  alias Pickinsticks.Server
 
   def new_game(stick_count \\ 1) do
     Server.start_link(stick_count)
